@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'tahersahbi/students-management'
+        DOCKER_IMAGE = 'oumaymagafsi/devops-project'
         DOCKER_TAG   = "${BUILD_NUMBER}"
     }
 
@@ -13,7 +13,7 @@ pipeline {
                 echo '====== Checking out code from GitHub ======'
                 git branch: 'main',
                     credentialsId: 'github-token',
-                    url: 'https://github.com/Taher387/ProjetStudentsManagement-DevOps.git'
+                    url: 'https://github.com/oumaymagafsi/devops-project.git'
             }
         }
 
@@ -30,8 +30,8 @@ pipeline {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                     sh """
                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-                        -Dsonar.projectKey=students-management-devops \
-                        -Dsonar.projectName="Students Management DevOps" \
+                        -Dsonar.projectKey=devops-project \
+                        -Dsonar.projectName="DevOps Project" \
                         -Dsonar.host.url=http://172.17.0.1:9000 \
                         -Dsonar.token=\$SONAR_TOKEN
                     """
@@ -71,9 +71,8 @@ pipeline {
                 echo '====== Deploying to Kubernetes ======'
                 withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
                     sh """
-                        kubectl config current-context
-                        kubectl set image deployment/spring-app \
-                        spring-app=${DOCKER_IMAGE}:${DOCKER_TAG} -n devops
+                        kubectl set image deployment/devops-project \
+                        devops-project=${DOCKER_IMAGE}:${DOCKER_TAG} -n devops
                     """
                 }
             }
@@ -103,3 +102,4 @@ pipeline {
         }
     }
 }
+
